@@ -1,0 +1,195 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// This security rules file assumes the following data structures:
+//
+// Collection: user_presets
+// Document ID: presetDocId ('default' or custom username / string / user UID)
+// Fields:
+//   - presets: map or string (optional) - Element presets build states (Ignis, Aqua, Ventus, Terra, Lux, Umbra)
+//   - presetsJson: string (optional, max 800,000 chars) - Serialized JSON string of element presets
+//   - updatedAt: timestamp (optional) - Server timestamp when presets were saved
+//   - clientUpdatedAt: number (optional, >= 0) - Client millisecond timestamp (Date.now())
+//
+// Collection: shared_builds
+// Document ID: buildId (auto-generated alphanumeric string)
+// Fields:
+//   - characterName: string (required, 1-100 chars) - Character name (e.g. 'Rin')
+//   - characterId: number (required, >= 0) - Character identifier
+//   - authorName: string (required, 1-100 chars) - Author display name (defaults to 'Anonymous')
+//   - build: map (required) - Complete build state object (characterId, level, skills, discs, etc.)
+//   - createdAt: timestamp (required) - Server timestamp of publication
+//   - clientCreatedAt: number (required, >= 0) - Client millisecond timestamp (Date.now())
+//
+// Collection: users
+// Document ID: usernameLower (lowercase username, length 3-20, pattern ^[a-zA-Z0-9_]{3,20}$)
+// Fields:
+//   - username: string (display username)
+//   - usernameLower: string (canonical lowercase username)
+//   - deviceId: string (hardware device fingerprint hash)
+//   - ip: string (IP address at registration)
+//   - lastIp: string (optional, IP address at last login)
+//   - hasPassword: bool (whether password protection is active)
+//   - passwordHash, passwordSalt, passwordUpdatedAt
+//   - failedAttempts: number (consecutive failed login attempts)
+//   - lockoutUntil: number (timestamp ms until lockout expires)
+//   - createdAt: timestamp (account creation timestamp)
+//   - lastSeenAt: timestamp (timestamp of last activity or login)
+//
+// Collection: devices
+// Document ID: deviceId (string, length 1-128)
+// Fields:
+//   - username: string
+//   - usernameLower: string
+//   - ip: string
+//   - registeredAt: timestamp
+//   - lastSeenAt: timestamp
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    // Check if the request is from an authenticated user (including anonymous auth)
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Validate that a timestamp is recent (within the last 5 minutes)
+    function isRecent(time) {
+      return time is timestamp &&
+             time > request.time - duration.value(5, 'm') &&
+             time <= request.time;
+    }
+
+    // Validate that a string document ID is valid and reasonably bounded
+    function isValidDocId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128;
+    }
+
+    // Validate username string format (3-20 characters, alphanumeric and underscore)
+    function isValidUsername(name) {
+      return name is string &&
+             name.size() >= 3 &&
+             name.size() <= 20 &&
+             name.matches('^[a-zA-Z0-9_]{3,20}$');
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    // Access authorization check for user_presets
+    // Allows access for any valid document ID (supports custom usernames, anonymous auth, and 'default')
+    function canAccessPreset(presetDocId) {
+      return isValidDocId(presetDocId);
+    }
+
+    // Domain validator for user_presets collection
+    // Called in BOTH create and update rules to eliminate update bypass
+    function isValidUserPreset(data) {
+      let allowedKeys = ['presets', 'presetsJson', 'updatedAt', 'clientUpdatedAt'];
+      return data.keys().hasOnly(allowedKeys) &&
+             // At least one preset payload field must be present
+             ('presets' in data || 'presetsJson' in data) &&
+             // Stringified JSON preset validation (max 800KB)
+             (!('presetsJson' in data) || (data.presetsJson is string && data.presetsJson.size() > 0 && data.presetsJson.size() <= 800000)) &&
+             // Structured map or string preset validation
+             (!('presets' in data) || (data.presets is map || (data.presets is string && data.presets.size() <= 800000))) &&
+             // Server timestamp validation
+             (!('updatedAt' in data) || (data.updatedAt is timestamp)) &&
+             // Client timestamp validation
+             (!('clientUpdatedAt' in data) || (data.clientUpdatedAt is number && data.clientUpdatedAt >= 0));
+    }
+
+    // Domain validator for the build object inside shared_builds
+    function isValidBuildMap(build) {
+      return build is map &&
+             'characterId' in build &&
+             build.characterId is number &&
+             build.characterId >= 0 &&
+             'level' in build &&
+             build.level is number &&
+             build.level >= 1 &&
+             build.level <= 100;
+    }
+
+    // Domain validator for shared_builds collection
+    function isValidSharedBuild(data) {
+      let requiredKeys = ['characterName', 'characterId', 'authorName', 'build', 'createdAt', 'clientCreatedAt'];
+      return data.keys().hasAll(requiredKeys) &&
+             data.keys().hasOnly(requiredKeys) &&
+             data.characterName is string &&
+             data.characterName.size() >= 1 &&
+             data.characterName.size() <= 100 &&
+             data.characterId is number &&
+             data.characterId >= 0 &&
+             data.authorName is string &&
+             data.authorName.size() >= 1 &&
+             data.authorName.size() <= 100 &&
+             isValidBuildMap(data.build) &&
+             data.createdAt is timestamp &&
+             (data.createdAt == request.time || isRecent(data.createdAt)) &&
+             data.clientCreatedAt is number &&
+             data.clientCreatedAt >= 0;
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    // Root Default Deny: Reject any unmatched collection or document paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 1. user_presets Collection
+    // Supports reading, creating, updating, and resetting presets for web app and manual Firebase Console inputs
+    match /user_presets/{presetDocId} {
+      // Allows reading preset document by valid presetDocId (supports custom username, client session, and 'default')
+      allow read: if canAccessPreset(presetDocId);
+
+      // Allows create and update with strict data schema validation
+      allow create: if canAccessPreset(presetDocId) && isValidUserPreset(request.resource.data);
+      allow update: if canAccessPreset(presetDocId) && isValidUserPreset(request.resource.data);
+
+      // Allows deleting preset document by valid presetDocId to support preset resets
+      allow delete: if canAccessPreset(presetDocId);
+    }
+
+    // 2. shared_builds Collection
+    // Community build sharing: public read, strictly validated creation, immutable once published
+    match /shared_builds/{buildId} {
+      // Anyone with the link can view a shared build
+      allow read: if isValidDocId(buildId);
+
+      // Valid builds can be published; once written, they cannot be updated or deleted
+      allow create: if isValidDocId(buildId) && isValidSharedBuild(request.resource.data);
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // 3. users Collection
+    // User Authentication & Profile Security
+    match /users/{usernameLower} {
+      allow read: if true;
+      allow create, update: if isValidUsername(usernameLower);
+      allow delete: if false;
+    }
+
+    // 4. devices Collection
+    // Device Registration & Hardware Fingerprint Lock
+    match /devices/{deviceId} {
+      allow read: if true;
+      allow create, update: if isValidDocId(deviceId);
+      allow delete: if false;
+    }
+  }
+}

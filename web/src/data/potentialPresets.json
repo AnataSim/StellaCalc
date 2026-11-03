@@ -1,0 +1,658 @@
+{
+  "10301": {
+    "id": 10301,
+    "characterId": 103,
+    "characterName": "Amber",
+    "name": "Default Preset 1",
+    "desc": "Amber Default Preset 1",
+    "shareCode": "AAAAZwAAAGwAAAB+MAXE4gBRsQAMAKxwAGBA"
+  },
+  "10302": {
+    "id": 10302,
+    "characterId": 103,
+    "characterName": "Amber",
+    "name": "Default Preset 2",
+    "desc": "Amber Default Preset 2",
+    "shareCode": "AAAAZwAAAGwAAAB+zbAEggBdgQBgAMGwDAEA"
+  },
+  "10701": {
+    "id": 10701,
+    "characterId": 107,
+    "characterName": "Tilia",
+    "name": "Default Preset 1",
+    "desc": "Tilia Default Preset 1",
+    "shareCode": "AAAAhAAAAHUAAABrrAbQgADAQcRmAM2ZBAAB"
+  },
+  "10702": {
+    "id": 10702,
+    "characterId": 107,
+    "characterName": "Tilia",
+    "name": "Default Preset 2",
+    "desc": "Tilia Default Preset 2",
+    "shareCode": "AAAAawAAAJYAAAB1kDSYAAPNIASEAMBBxOQA"
+  },
+  "10801": {
+    "id": 10801,
+    "characterId": 108,
+    "characterName": "Kasimira",
+    "name": "Default Preset 1",
+    "desc": "Kasimira Default Preset 1",
+    "shareCode": "AAAAZwAAAGwAAAB+MAXE4gBRsQAMAKxwAGBA"
+  },
+  "10802": {
+    "id": 10802,
+    "characterId": 108,
+    "characterName": "Kasimira",
+    "name": "Default Preset 2",
+    "desc": "Kasimira Default Preset 2",
+    "shareCode": "AAAAZwAAAGwAAAB+zbAEggBdgQBgAMGwDAEA"
+  },
+  "11001": {
+    "id": 11001,
+    "characterId": 110,
+    "characterName": "Firenze",
+    "name": "Default Preset 1",
+    "desc": "Firenze Default Preset 1",
+    "shareCode": "AAAAbgAAAIcAAACOMAbYMEHNMCCAAM2BAAIg"
+  },
+  "11002": {
+    "id": 11002,
+    "characterId": 110,
+    "characterName": "Firenze",
+    "name": "Default Preset 2",
+    "desc": "Firenze Default Preset 2",
+    "shareCode": "AAAAbgAAAIcAAACOzZgYAEEwBsTAADAB2AIg"
+  },
+  "11101": {
+    "id": 11101,
+    "characterId": 111,
+    "characterName": "Iris",
+    "name": "Default Preset 1",
+    "desc": "Iris Default Preset 1",
+    "shareCode": "AAAAfQAAAH8AAABvw4gYAjCsQABjgMJ2gAAA"
+  },
+  "11102": {
+    "id": 11102,
+    "characterId": 111,
+    "characterName": "Iris",
+    "name": "Default Preset 2",
+    "desc": "Iris Default Preset 2",
+    "shareCode": "AAAAcQAAAH8AAABvwDE7AECsQABjgMJ2gAAA"
+  },
+  "11201": {
+    "id": 11201,
+    "characterId": 112,
+    "characterName": "Noya",
+    "name": "Default Preset 1",
+    "desc": "Noya Default Preset 1",
+    "shareCode": "AAAAcAAAAHgAAAB7MAbA4hgwBMDGAGDFwIYA"
+  },
+  "11202": {
+    "id": 11202,
+    "characterId": 112,
+    "characterName": "Noya",
+    "name": "Default Preset 2",
+    "desc": "Noya Default Preset 2",
+    "shareCode": "AAAAdwAAAHAAAAB7MAbM4gDM2A2AADDDwYYA"
+  },
+  "11301": {
+    "id": 11301,
+    "characterId": 113,
+    "characterName": "Shimiao",
+    "name": "Default Preset 1",
+    "desc": "Shimiao Default Preset 1",
+    "shareCode": "AAAAcQAAAH8AAABvwDE7AECsQABjgMJ2gAAA"
+  },
+  "11302": {
+    "id": 11302,
+    "characterId": 113,
+    "characterName": "Shimiao",
+    "name": "Default Preset 2",
+    "desc": "Shimiao Default Preset 2",
+    "shareCode": "AAAAcQAAAH0AAAB/wDEkiABtsDgAAMIAGA2I"
+  },
+  "11401": {
+    "id": 11401,
+    "characterId": 114,
+    "characterName": "Chaton",
+    "name": "Default Preset 1",
+    "desc": "Chaton Default Preset 1",
+    "shareCode": "AAAAcgAAAH4AAABsMAOh7AjDgRgBgDGxABIA"
+  },
+  "11402": {
+    "id": 11402,
+    "characterId": 114,
+    "characterName": "Chaton",
+    "name": "Default Preset 2",
+    "desc": "Chaton Default Preset 2",
+    "shareCode": "AAAAcgAAAH4AAACNMAOh7AjDgRgBgKwIAOIA"
+  },
+  "11501": {
+    "id": 11501,
+    "characterId": 115,
+    "characterName": "Firefly",
+    "name": "Default Preset 1",
+    "desc": "Firefly Default Preset 1",
+    "shareCode": "AAAAhAAAAHMAAABrrAPFAAAwBsDmQMwyADAB"
+  },
+  "11502": {
+    "id": 11502,
+    "characterId": 115,
+    "characterName": "Firefly",
+    "name": "Default Preset 2",
+    "desc": "Firefly Default Preset 2",
+    "shareCode": "AAAAlgAAAHMAAABrMATFwAAwBsDmQMwgYEAB"
+  },
+  "11601": {
+    "id": 11601,
+    "characterId": 116,
+    "characterName": "Ridge",
+    "name": "Default Preset 1",
+    "desc": "Ridge Default Preset 1",
+    "shareCode": "AAAAlQAAAHQAAACczbAFgAGhiCBiADAGGBQG"
+  },
+  "11602": {
+    "id": 11602,
+    "characterId": 116,
+    "characterName": "Ridge",
+    "name": "Default Preset 2",
+    "desc": "Ridge Default Preset 2",
+    "shareCode": "AAAAdAAAAJwAAABrzbAEhgAwBhgCRKAGBGIE"
+  },
+  "11701": {
+    "id": 11701,
+    "characterId": 117,
+    "characterName": "Jinglin",
+    "name": "Default Preset 1",
+    "desc": "Jinglin Default Preset 1",
+    "shareCode": "AAAAlgAAAHUAAABrMAbM4gDAQcBoAMwbCDAB"
+  },
+  "11702": {
+    "id": 11702,
+    "characterId": 117,
+    "characterName": "Jinglin",
+    "name": "Default Preset 2",
+    "desc": "Jinglin Default Preset 2",
+    "shareCode": "AAAAdQAAAIQAAABryzAAjEBQA8DIAM2YCAAB"
+  },
+  "11801": {
+    "id": 11801,
+    "characterId": 118,
+    "characterName": "Coronis",
+    "name": "Default Preset 1",
+    "desc": "Coronis Default Preset 1",
+    "shareCode": "AAAAhwAAAHYAAACOzbBgggDM2ACKAM2ABAQY"
+  },
+  "11802": {
+    "id": 11802,
+    "characterId": 118,
+    "characterName": "Coronis",
+    "name": "Default Preset 2",
+    "desc": "Coronis Default Preset 2",
+    "shareCode": "AAAAhwAAAHYAAACOMAbM4gAwBmRkADAGwBIg"
+  },
+  "11901": {
+    "id": 11901,
+    "characterId": 119,
+    "characterName": "Nanoha",
+    "name": "Default Preset 1",
+    "desc": "Nanoha Default Preset 1",
+    "shareCode": "AAAAdwAAAHgAAAB7MAbM4gAwBMDGADDDwYYA"
+  },
+  "11902": {
+    "id": 11902,
+    "characterId": 119,
+    "characterName": "Nanoha",
+    "name": "Default Preset 2",
+    "desc": "Nanoha Default Preset 2",
+    "shareCode": "AAAAcAAAAHcAAAB7MAbE5gDK8AQGAGDDwYYA"
+  },
+  "12001": {
+    "id": 12001,
+    "characterId": 120,
+    "characterName": "Canace",
+    "name": "Default Preset 1",
+    "desc": "Canace Default Preset 1",
+    "shareCode": "AAAAcAAAAHgAAAB7MAbA4hgwBMDGAGDFwIYA"
+  },
+  "12002": {
+    "id": 12002,
+    "characterId": 120,
+    "characterName": "Canace",
+    "name": "Default Preset 2",
+    "desc": "Canace Default Preset 2",
+    "shareCode": "AAAAeAAAAHcAAAB7MAbE5gDJMASEAGDDwYYA"
+  },
+  "12301": {
+    "id": 12301,
+    "characterId": 123,
+    "characterName": "Ann",
+    "name": "Default Preset 1",
+    "desc": "Ann Default Preset 1",
+    "shareCode": "AAAAcAAAAHgAAAB7MAbA4hgwBMDGAGDFwIYA"
+  },
+  "12302": {
+    "id": 12302,
+    "characterId": 123,
+    "characterName": "Ann",
+    "name": "Default Preset 2",
+    "desc": "Ann Default Preset 2",
+    "shareCode": "AAAAewAAAHcAAAB4zAYHBkDK8AQGADAEwMYA"
+  },
+  "12501": {
+    "id": 12501,
+    "characterId": 125,
+    "characterName": "Freesia",
+    "name": "Default Preset 1",
+    "desc": "Freesia Default Preset 1",
+    "shareCode": "AAAAcQAAAH0AAAB/wDEkiABtsDgAAMIAGA2I"
+  },
+  "12502": {
+    "id": 12502,
+    "characterId": 125,
+    "characterName": "Freesia",
+    "name": "Default Preset 2",
+    "desc": "Freesia Default Preset 2",
+    "shareCode": "AAAAfQAAAH8AAABvw4gYAjCsQABjgMJ2gAAA"
+  },
+  "12601": {
+    "id": 12601,
+    "characterId": 126,
+    "characterName": "Flora",
+    "name": "Default Preset 1",
+    "desc": "Flora Default Preset 1",
+    "shareCode": "AAAAjQAAAGwAAAB+wbAADANdsQAAAMGwDAEA"
+  },
+  "12602": {
+    "id": 12602,
+    "characterId": 126,
+    "characterName": "Flora",
+    "name": "Default Preset 2",
+    "desc": "Flora Default Preset 2",
+    "shareCode": "AAAAfgAAAGwAAACNMAbDAMBdgQBQADAGxGIA"
+  },
+  "12701": {
+    "id": 12701,
+    "characterId": 127,
+    "characterName": "Teresa",
+    "name": "Default Preset 1",
+    "desc": "Teresa Default Preset 1",
+    "shareCode": "AAAAfQAAAH8AAABvw4gYAjCsQABjgMJ2gAAA"
+  },
+  "12702": {
+    "id": 12702,
+    "characterId": 127,
+    "characterName": "Teresa",
+    "name": "Default Preset 2",
+    "desc": "Teresa Default Preset 2",
+    "shareCode": "AAAAcQAAAH0AAAB/wDEkiABtsDgAAMIAGA2I"
+  },
+  "13001": {
+    "id": 13001,
+    "characterId": 130,
+    "characterName": "Donna",
+    "name": "Default Preset 1",
+    "desc": "Donna Default Preset 1",
+    "shareCode": "AAAAcQAAAH8AAACCwDNEgECgATgNgM2wIGAA"
+  },
+  "13002": {
+    "id": 13002,
+    "characterId": 130,
+    "characterName": "Donna",
+    "name": "Default Preset 2",
+    "desc": "Donna Default Preset 2",
+    "shareCode": "AAAAbwAAAH8AAACCMAQkEgagATgNgM2wIGAA"
+  },
+  "13201": {
+    "id": 13201,
+    "characterId": 132,
+    "characterName": "Minova",
+    "name": "Default Preset 1",
+    "desc": "Minova Default Preset 1",
+    "shareCode": "AAAAhAAAAHUAAABrrAbQgADAQcRmAM2ZBAAB"
+  },
+  "13202": {
+    "id": 13202,
+    "characterId": 132,
+    "characterName": "Minova",
+    "name": "Default Preset 2",
+    "desc": "Minova Default Preset 2",
+    "shareCode": "AAAAlgAAAIQAAABrMAbF4gAwBoS2AMwZCDAD"
+  },
+  "13301": {
+    "id": 13301,
+    "characterId": 133,
+    "characterName": "Nazuka",
+    "name": "Default Preset 1",
+    "desc": "Nazuka Default Preset 1",
+    "shareCode": "AAAAdwAAAIUAAAB7MAWo0gAwBshkADDDwYYA"
+  },
+  "13302": {
+    "id": 13302,
+    "characterId": 133,
+    "characterName": "Nazuka",
+    "name": "Default Preset 2",
+    "desc": "Nazuka Default Preset 2",
+    "shareCode": "AAAAawAAAIUAAAB7ljEAFgNhgM8GAGDDwYYA"
+  },
+  "13401": {
+    "id": 13401,
+    "characterId": 134,
+    "characterName": "Fuyuka",
+    "name": "Default Preset 1",
+    "desc": "Fuyuka Default Preset 1",
+    "shareCode": "AAAAhgAAAGwAAAB+MAbHEgBRsQAMAKxwAGBA"
+  },
+  "13402": {
+    "id": 13402,
+    "characterId": 134,
+    "characterName": "Fuyuka",
+    "name": "Default Preset 2",
+    "desc": "Fuyuka Default Preset 2",
+    "shareCode": "AAAAhgAAAH4AAABsMAPPAAbDgRgBgDGxABIA"
+  },
+  "13501": {
+    "id": 13501,
+    "characterId": 135,
+    "characterName": "Mistique",
+    "name": "Default Preset 1",
+    "desc": "Mistique Default Preset 1",
+    "shareCode": "AAAAkwAAAIcAAACOzbAFggDNMASAAM2ABAIg"
+  },
+  "13502": {
+    "id": 13502,
+    "characterId": 135,
+    "characterName": "Mistique",
+    "name": "Default Preset 2",
+    "desc": "Mistique Default Preset 2",
+    "shareCode": "AAAAjgAAAIcAAACTzDMEgDDM8CSAADAGhGIA"
+  },
+  "13701": {
+    "id": 13701,
+    "characterId": 137,
+    "characterName": "Eleanor",
+    "name": "Default Preset 1",
+    "desc": "Eleanor Default Preset 1",
+    "shareCode": "AAAAdwAAAIkAAAB7y2gIggAwBsXgADDDwYYA"
+  },
+  "13702": {
+    "id": 13702,
+    "characterId": 137,
+    "characterName": "Eleanor",
+    "name": "Default Preset 2",
+    "desc": "Eleanor Default Preset 2",
+    "shareCode": "AAAAawAAAIkAAAB7ljEAFgPNsAGGADDDwYYA"
+  },
+  "13901": {
+    "id": 13901,
+    "characterId": 139,
+    "characterName": "Allie",
+    "name": "Default Preset 1",
+    "desc": "Allie Default Preset 1",
+    "shareCode": "AAAAiwAAAH0AAAB/zbADAEbMSDAAAKIABAeI"
+  },
+  "13902": {
+    "id": 13902,
+    "characterId": 139,
+    "characterName": "Allie",
+    "name": "Default Preset 2",
+    "desc": "Allie Default Preset 2",
+    "shareCode": "AAAAiwAAAH0AAAB/MABnYkDMSBAMAKwABGOA"
+  },
+  "14001": {
+    "id": 14001,
+    "characterId": 140,
+    "characterName": "Sparkla",
+    "name": "Default Preset 1",
+    "desc": "Sparkla Default Preset 1",
+    "shareCode": "AAAAjAAAAHQAAACczbAYggChiCBiADAAGAGG"
+  },
+  "14002": {
+    "id": 14002,
+    "characterId": 140,
+    "characterName": "Sparkla",
+    "name": "Default Preset 2",
+    "desc": "Sparkla Default Preset 2",
+    "shareCode": "AAAAjAAAAHQAAACcMAbY4gChiCBiADABGAOE"
+  },
+  "14101": {
+    "id": 14101,
+    "characterId": 141,
+    "characterName": "Chixia",
+    "name": "Default Preset 1",
+    "desc": "Chixia Default Preset 1",
+    "shareCode": "AAAAjQAAAGwAAAB+wbAADANdsQAAAMGwDAEA"
+  },
+  "14102": {
+    "id": 14102,
+    "characterId": 141,
+    "characterName": "Chixia",
+    "name": "Default Preset 2",
+    "desc": "Chixia Default Preset 2",
+    "shareCode": "AAAAfgAAAGwAAACNMAbDAMBdgQBQADAGxGIA"
+  },
+  "14201": {
+    "id": 14201,
+    "characterId": 142,
+    "characterName": "Cosette",
+    "name": "Default Preset 1",
+    "desc": "Cosette Default Preset 1",
+    "shareCode": "AAAAkwAAAIcAAACOzbAFggDNMASAAM2ABAIg"
+  },
+  "14202": {
+    "id": 14202,
+    "characterId": 142,
+    "characterName": "Cosette",
+    "name": "Default Preset 2",
+    "desc": "Cosette Default Preset 2",
+    "shareCode": "AAAAkwAAAIcAAACOMAbE5gAwBsTAADwGIAIg"
+  },
+  "14301": {
+    "id": 14301,
+    "characterId": 143,
+    "characterName": "Wraith",
+    "name": "Default Preset 1",
+    "desc": "Wraith Default Preset 1",
+    "shareCode": "AAAAjwAAAIQAAAB7zWgEigAwA8G2AGEDwIgA"
+  },
+  "14302": {
+    "id": 14302,
+    "characterId": 143,
+    "characterName": "Wraith",
+    "name": "Default Preset 2",
+    "desc": "Wraith Default Preset 2",
+    "shareCode": "AAAAdwAAAI8AAAB7MAbM4gDM2AEIADDDwYYA"
+  },
+  "14401": {
+    "id": 14401,
+    "characterId": 144,
+    "characterName": "Chitose",
+    "name": "Default Preset 1",
+    "desc": "Chitose Default Preset 1",
+    "shareCode": "AAAAkAAAAH0AAAB/y3ADAAnMSBgMAMJAAGOA"
+  },
+  "14402": {
+    "id": 14402,
+    "characterId": 144,
+    "characterName": "Chitose",
+    "name": "Default Preset 2",
+    "desc": "Chitose Default Preset 2",
+    "shareCode": "AAAAkAAAAH0AAAB/MAbDaAjMSBgMAMJABAOA"
+  },
+  "14501": {
+    "id": 14501,
+    "characterId": 145,
+    "characterName": "Otoha",
+    "name": "Default Preset 1",
+    "desc": "Otoha Default Preset 1",
+    "shareCode": "AAAAjgAAAJEAAACHzAgEgjDNsBiAAMxgwIAA"
+  },
+  "14502": {
+    "id": 14502,
+    "characterId": 145,
+    "characterName": "Otoha",
+    "name": "Default Preset 2",
+    "desc": "Otoha Default Preset 2",
+    "shareCode": "AAAAjgAAAJEAAACHPAkEgDAwBtjgADAGxMAA"
+  },
+  "14701": {
+    "id": 14701,
+    "characterId": 147,
+    "characterName": "Caramel",
+    "name": "Default Preset 1",
+    "desc": "Caramel Default Preset 1",
+    "shareCode": "AAAAkwAAAIcAAACOzbAEhgDNMASAAM2ABAIg"
+  },
+  "14702": {
+    "id": 14702,
+    "characterId": 147,
+    "characterName": "Caramel",
+    "name": "Default Preset 2",
+    "desc": "Caramel Default Preset 2",
+    "shareCode": "AAAAkwAAAIcAAACOMAbEygAwBsTAADYGxAII"
+  },
+  "14901": {
+    "id": 14901,
+    "characterId": 149,
+    "characterName": "Gerie",
+    "name": "Default Preset 1",
+    "desc": "Gerie Default Preset 1",
+    "shareCode": "AAAAlQAAAHQAAACczbAHAAGhiCBiADAGGAMB"
+  },
+  "14902": {
+    "id": 14902,
+    "characterId": 149,
+    "characterName": "Gerie",
+    "name": "Default Preset 2",
+    "desc": "Gerie Default Preset 2",
+    "shareCode": "AAAAlQAAAHQAAACcMAYjbAGhiCBiAMDGGAJB"
+  },
+  "15001": {
+    "id": 15001,
+    "characterId": 150,
+    "characterName": "Laru",
+    "name": "Default Preset 1",
+    "desc": "Laru Default Preset 1",
+    "shareCode": "AAAAlgAAAHUAAABrMAbM4gDAQcBoAMwbCDAB"
+  },
+  "15002": {
+    "id": 15002,
+    "characterId": 150,
+    "characterName": "Laru",
+    "name": "Default Preset 2",
+    "desc": "Laru Default Preset 2",
+    "shareCode": "AAAAawAAAJYAAAB1kDSYAAPNIASEAMBBxOQA"
+  },
+  "15501": {
+    "id": 15501,
+    "characterId": 155,
+    "characterName": "Shia",
+    "name": "Default Preset 1",
+    "desc": "Shia Default Preset 1",
+    "shareCode": "AAAAmwAAAIQAAABrzbAMAgGQAMA8EcwMDEAA"
+  },
+  "15502": {
+    "id": 15502,
+    "characterId": 155,
+    "characterName": "Shia",
+    "name": "Default Preset 2",
+    "desc": "Shia Default Preset 2",
+    "shareCode": "AAAAmwAAAHUAAABrzbABggFgQcDmAMwMDEAA"
+  },
+  "15601": {
+    "id": 15601,
+    "characterId": 156,
+    "characterName": "Nazuna",
+    "name": "Default Preset 1",
+    "desc": "Nazuna Default Preset 1",
+    "shareCode": "AAAAnAAAAJUAAABrwYADLAZgCDsMAKGAAGAB"
+  },
+  "15602": {
+    "id": 15602,
+    "characterId": 156,
+    "characterName": "Nazuna",
+    "name": "Default Preset 2",
+    "desc": "Nazuna Default Preset 2",
+    "shareCode": "AAAAlQAAAHQAAACcMAPE7AChiCBiADAAGAeG"
+  },
+  "15701": {
+    "id": 15701,
+    "characterId": 157,
+    "characterName": "Karin",
+    "name": "Default Preset 1",
+    "desc": "Karin Default Preset 1",
+    "shareCode": "AAAAnQAAAIcAAACOzbAHAAjMMAAASWwAzAIQ"
+  },
+  "15702": {
+    "id": 15702,
+    "characterId": 157,
+    "characterName": "Karin",
+    "name": "Default Preset 2",
+    "desc": "Karin Default Preset 2",
+    "shareCode": "AAAAnQAAAIcAAACOMAbHYAEwAcQSAGwA0AIw"
+  },
+  "15801": {
+    "id": 15801,
+    "characterId": 158,
+    "characterName": "Snowish Laru",
+    "name": "Default Preset 1",
+    "desc": "Snowish Laru Default Preset 1",
+    "shareCode": "AAAAZwAAAH4AAACeMAHHAkDCSBgBgM2wBYwA"
+  },
+  "15802": {
+    "id": 15802,
+    "characterId": 158,
+    "characterName": "Snowish Laru",
+    "name": "Default Preset 2",
+    "desc": "Snowish Laru Default Preset 1",
+    "shareCode": "AAAAngAAAH4AAACNzbAYAkDCSBgBgKoAAOwA"
+  },
+  "15901": {
+    "id": 15901,
+    "characterId": 159,
+    "characterName": "Springseek Coronis",
+    "name": "Default Preset 1",
+    "desc": "Springseek Coronis Default Preset 1",
+    "shareCode": "AAAAnAAAAJ8AAAB0wEDDAYYwBdggAKGIIGIA"
+  },
+  "15902": {
+    "id": 15902,
+    "characterId": 159,
+    "characterName": "Springseek Coronis",
+    "name": "Default Preset 2",
+    "desc": "Springseek Coronis Default Preset 1",
+    "shareCode": "AAAAnAAAAJ8AAACVwYADDAaRgABcAGAAGwwA"
+  },
+  "16001": {
+    "id": 16001,
+    "characterId": 160,
+    "characterName": "Suntide Willow",
+    "name": "Default Preset 1",
+    "desc": "Suntide Willow Default Preset 1",
+    "shareCode": "AAAAfQAAAKAAAABrbDAAk4DNhaAABsGBBBAB"
+  },
+  "16002": {
+    "id": 16002,
+    "characterId": 160,
+    "characterName": "Suntide Willow",
+    "name": "Default Preset 2",
+    "desc": "Suntide Willow Default Preset 1",
+    "shareCode": "AAAAfwAAAKAAAAB9wEkCgEAwMMBsBm2wBAAI"
+  },
+  "16201": {
+    "id": 16201,
+    "characterId": 162,
+    "characterName": "Firstlight Noya",
+    "name": "Default Preset 1",
+    "desc": "Firstlight Noya Default Preset 1",
+    "shareCode": "AAAAogAAAIQAAABrzbADAEbNiACCAKxIAEIA"
+  },
+  "16202": {
+    "id": 16202,
+    "characterId": 162,
+    "characterName": "Firstlight Noya",
+    "name": "Default Preset 2",
+    "desc": "Firstlight Noya Default Preset 2",
+    "shareCode": "AAAAogAAAIQAAABrMAbbAA4wBsCSAKxIAEIA"
+  }
+}
