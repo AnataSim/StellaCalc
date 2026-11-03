@@ -444,3 +444,18 @@ export const secureStorage = {
   }
 };
 
+// -------------------------------------------------------------
+// DevTools Anti-Tampering & Self-XSS Security Defense
+// -------------------------------------------------------------
+if (typeof window !== 'undefined') {
+  try {
+    const bannerStyleHeader = 'color: #ef4444; font-size: 20px; font-weight: 900;';
+    const bannerStyleBody = 'color: #f59e0b; font-size: 12px; font-weight: bold;';
+    console.log('%c⚠️ STOP / PERINGATAN KEAMANAN (STELLACALC)', bannerStyleHeader);
+    console.log(
+      '%cJangan pernah menempelkan skrip atau kode berbahaya di sini. Sistem dilindungi oleh salted one-way hashing, hardware fingerprinting, dan tamper-evident storage.',
+      bannerStyleBody
+    );
+  } catch {}
+}
+

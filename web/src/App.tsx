@@ -274,7 +274,39 @@ export default function App() {
   });
 
   const [hasSavedPreset, setHasSavedPreset] = useState(false);
-  const [isPresetDrawerOpen, setIsPresetDrawerOpen] = useState(false);
+  const [isPresetDrawerOpen, setIsPresetDrawerOpen] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem('stella_preset_panel_visible');
+      return stored !== null ? stored === 'true' : true;
+    } catch {
+      return true;
+    }
+  });
+
+  const handleTogglePresetDrawer = () => {
+    setIsPresetDrawerOpen((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('stella_preset_panel_visible', String(next));
+      } catch {}
+      if (next) {
+        setTimeout(() => {
+          const el = document.getElementById('section-presets');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }, 50);
+      }
+      return next;
+    });
+  };
+
+  const handleClosePresetDrawer = () => {
+    setIsPresetDrawerOpen(false);
+    try {
+      localStorage.setItem('stella_preset_panel_visible', 'false');
+    } catch {}
+  };
   const [isStartMenu, setIsStartMenu] = useState<boolean>(() => {
     try {
       const initialUser = authService.getCurrentSession()?.username;
@@ -765,12 +797,12 @@ export default function App() {
         countdown={countdown}
         onSavePreset={handleSavePreset}
         hasSavedPreset={hasSavedPreset}
-        onTogglePresetDrawer={() => setIsPresetDrawerOpen((prev) => !prev)}
+        onTogglePresetDrawer={handleTogglePresetDrawer}
         isPresetDrawerOpen={isPresetDrawerOpen}
         userSession={userSession}
         onSessionUpdated={(updated) => setUserSession(updated)}
         onLogout={() => {
-          authService.logout();
+          authService.logout(true);
           setUserSession(null);
           setBuild(defaultBuild);
           setIsStartMenu(true);
@@ -778,18 +810,6 @@ export default function App() {
           showToast('Anda telah keluar dari sesi.');
         }}
         showToast={showToast}
-      />
-
-      <ElementPresetDrawer
-        isOpen={isPresetDrawerOpen}
-        onClose={() => setIsPresetDrawerOpen(false)}
-        currentBuild={build}
-        mainChar={mainChar}
-        onApplyBuild={(loadedBuild) => {
-          setBuild(normalizeBuild(loadedBuild));
-        }}
-        showToast={showToast}
-        userSession={userSession}
       />
 
       {/* Toast Alert */}
@@ -832,6 +852,23 @@ export default function App() {
             onChangeSlotCharacter={handleChangeSlotCharacter}
             onClearSupportSlot={handleClearSupportSlot}
           />
+
+          {/* ========================================================================= */}
+          {/* BUILD PRESETS RECALL SECTION (Embedded directly in main page flow) */}
+          {/* ========================================================================= */}
+          <div id="section-presets" className="scroll-mt-24">
+            <ElementPresetDrawer
+              isOpen={isPresetDrawerOpen}
+              onClose={handleClosePresetDrawer}
+              currentBuild={build}
+              mainChar={mainChar}
+              onApplyBuild={(loadedBuild) => {
+                setBuild(normalizeBuild(loadedBuild));
+              }}
+              showToast={showToast}
+              userSession={userSession}
+            />
+          </div>
 
           {/* ========================================================================= */}
           {/* MOBILE SECTION TABS (< lg) — Ultra Clean, Spacious & Zero Clutter */}

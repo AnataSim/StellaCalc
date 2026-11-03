@@ -16,7 +16,8 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   showToast,
   onFinish,
 }) => {
-  const [progress, setProgress] = useState(userSession ? 0 : 0);
+  const [activeSession, setActiveSession] = useState<UserSession | null>(userSession || null);
+  const [progress, setProgress] = useState(0);
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [isReadyForInput, setIsReadyForInput] = useState(false);
 
@@ -30,7 +31,14 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 1. Fetch hardware fingerprint in the background
+  // Keep activeSession in sync if prop changes
+  useEffect(() => {
+    if (userSession) {
+      setActiveSession(userSession);
+    }
+  }, [userSession]);
+
+  // 1. Fetch hardware fingerprint in the background and check Remember Me device binding
   useEffect(() => {
     let isMounted = true;
     (async () => {
@@ -39,8 +47,18 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
         if (!isMounted) return;
         setDeviceInfo(info);
 
+        // Auto-login with device fingerprint & remember token (Default Remember Me)
+        if (!activeSession) {
+          const autoUser = await authService.tryAutoLoginWithDevice(info);
+          if (autoUser && isMounted) {
+            setActiveSession(autoUser);
+            onSuccess(autoUser);
+            return;
+          }
+        }
+
         const check = await authService.checkDeviceAccount(info.deviceId);
-        if (check.hasAccount && check.existingUsername) {
+        if (check.hasAccount && check.existingUsername && isMounted) {
           setUsername(check.existingUsername);
         }
       } catch (err) {
@@ -51,7 +69,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [activeSession, onSuccess]);
 
   // 2. Loading bar progress animation
   useEffect(() => {
@@ -60,19 +78,6 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
     const t3 = setTimeout(() => setProgress(90), 500);
     const t4 = setTimeout(() => {
       setProgress(100);
-
-      // If user already has an active session, fade out into app directly!
-      if (userSession) {
-        const tFade = setTimeout(() => setIsFadingOut(true), 250);
-        const tDone = setTimeout(() => onFinish?.(), 650);
-        return () => {
-          clearTimeout(tFade);
-          clearTimeout(tDone);
-        };
-      } else {
-        // If no active session, reveal the Text + Input text directly above the bar
-        setIsReadyForInput(true);
-      }
     }, 720);
 
     return () => {
@@ -81,7 +86,26 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
       clearTimeout(t3);
       clearTimeout(t4);
     };
-  }, [userSession, onFinish]);
+  }, []);
+
+  // 3. Handle transition when progress is 100%
+  useEffect(() => {
+    if (progress === 100) {
+      if (activeSession) {
+        // Active session or auto-logged in via Remember Me: skip login prompt completely!
+        setIsReadyForInput(false);
+        const tFade = setTimeout(() => setIsFadingOut(true), 250);
+        const tDone = setTimeout(() => onFinish?.(), 650);
+        return () => {
+          clearTimeout(tFade);
+          clearTimeout(tDone);
+        };
+      } else {
+        // No session found for this device: show username input
+        setIsReadyForInput(true);
+      }
+    }
+  }, [progress, activeSession, onFinish]);
 
   // Auto-focus input when ready
   useEffect(() => {

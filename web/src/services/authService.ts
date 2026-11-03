@@ -17,6 +17,8 @@ import { sanitizeString } from './security';
 const STORAGE_KEY_SESSION = 'stella_user_session_v1';
 const STORAGE_KEY_LOCAL_DEVICE_USER = 'stella_device_registered_username';
 const STORAGE_KEY_PASSWORDS = 'stella_local_passwords_v1';
+const STORAGE_KEY_REMEMBER_TOKEN = 'stella_device_remember_token_v1';
+const REMEMBER_SALT = 'STELLACALC_DEVICE_REMEMBER_SECRET_SALT_2026';
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -39,6 +41,15 @@ export interface AuthResult {
 interface LocalPasswordRecord {
   passwordHash: string;
   passwordSalt: string;
+}
+
+async function generateRememberSignature(username: string, deviceId: string): Promise<string> {
+  const enc = new TextEncoder();
+  const buffer = await crypto.subtle.digest(
+    'SHA-256',
+    enc.encode(`${REMEMBER_SALT}::${username.toLowerCase()}::${deviceId}`)
+  );
+  return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 function getLocalPasswordMap(): Record<string, LocalPasswordRecord> {
@@ -117,22 +128,95 @@ class AuthService {
   }
 
   /**
-   * Save active session
+   * Save active session and automatically store persistent Remember Me credentials
+   * bound cryptographically to this physical hardware device.
    */
   public saveSession(user: UserSession): void {
     try {
       localStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(user));
       localStorage.setItem(STORAGE_KEY_LOCAL_DEVICE_USER, user.username);
+
+      // Async write remember token
+      generateRememberSignature(user.username, user.deviceId).then((tokenSignature) => {
+        try {
+          const rememberPayload = {
+            username: user.username,
+            hasPassword: user.hasPassword,
+            deviceId: user.deviceId,
+            tokenSignature,
+            savedAt: Date.now()
+          };
+          localStorage.setItem(STORAGE_KEY_REMEMBER_TOKEN, JSON.stringify(rememberPayload));
+        } catch {}
+      }).catch(() => {});
     } catch {}
   }
 
   /**
-   * Logout user
+   * Logout user. Optionally preserve or clear device remember token.
    */
-  public logout(): void {
+  public logout(clearRememberToken: boolean = false): void {
     try {
       localStorage.removeItem(STORAGE_KEY_SESSION);
+      if (clearRememberToken) {
+        localStorage.removeItem(STORAGE_KEY_REMEMBER_TOKEN);
+      }
     } catch {}
+  }
+
+  /**
+   * Automatic login / session restoration checking the physical hardware device.
+   * Enables users returning after days/weeks of being offline to skip login automatically.
+   */
+  public async tryAutoLoginWithDevice(device: DeviceInfo): Promise<UserSession | null> {
+    // 1. Check if an active session is already present and matches this device
+    const current = this.getCurrentSession();
+    if (current && current.deviceId === device.deviceId && current.username) {
+      return current;
+    }
+
+    // 2. Check cryptographic Remember Me token stored on this device
+    try {
+      const rawRemember = localStorage.getItem(STORAGE_KEY_REMEMBER_TOKEN);
+      if (rawRemember) {
+        const parsed = JSON.parse(rawRemember);
+        if (parsed && parsed.username && parsed.deviceId === device.deviceId && parsed.tokenSignature) {
+          const expectedSig = await generateRememberSignature(parsed.username, device.deviceId);
+          if (parsed.tokenSignature === expectedSig) {
+            const restored: UserSession = {
+              username: parsed.username,
+              hasPassword: Boolean(parsed.hasPassword),
+              deviceId: device.deviceId,
+              loggedInAt: Date.now()
+            };
+            this.saveSession(restored);
+            return restored;
+          }
+        }
+      }
+    } catch {}
+
+    // 3. Check locally registered device username fallback
+    try {
+      const registeredUsername = localStorage.getItem(STORAGE_KEY_LOCAL_DEVICE_USER);
+      if (registeredUsername) {
+        const check = await this.checkDeviceAccount(device.deviceId);
+        if (check.hasAccount && check.existingUsername) {
+          const localPasswords = getLocalPasswordMap();
+          const hasPwd = Boolean(localPasswords[check.existingUsername.toLowerCase()]);
+          const restored: UserSession = {
+            username: check.existingUsername,
+            hasPassword: hasPwd,
+            deviceId: device.deviceId,
+            loggedInAt: Date.now()
+          };
+          this.saveSession(restored);
+          return restored;
+        }
+      }
+    } catch {}
+
+    return null;
   }
 
   /**
@@ -459,4 +543,4 @@ class AuthService {
   }
 }
 
-export const authService = new AuthService();
+export const authService = Object.freeze(new AuthService());

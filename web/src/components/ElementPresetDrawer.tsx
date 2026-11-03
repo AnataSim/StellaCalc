@@ -14,11 +14,9 @@ import {
   AlertTriangle,
   Check,
   Lock,
-  Cloud,
   UserCheck
 } from 'lucide-react';
 import { firebaseService } from '../services/firebase';
-import { FirebaseModal } from './FirebaseModal';
 import type { UserSession } from '../services/authService';
 import {
   deepSanitizeObject,
@@ -137,7 +135,6 @@ export const ElementPresetDrawer: React.FC<ElementPresetDrawerProps> = ({
     targetPreset: ElementPresetSlot | null;
   } | null>(null);
 
-  const [isFirebaseModalOpen, setIsFirebaseModalOpen] = useState(false);
   const [isCloudConnected, setIsCloudConnected] = useState(() => firebaseService.isConfigured());
 
   // Auto-sync element tab to main trekker's element when drawer opens or trekker element changes
@@ -416,18 +413,14 @@ export const ElementPresetDrawer: React.FC<ElementPresetDrawerProps> = ({
 
   return (
     <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 animate-in fade-in duration-200"
-        onClick={onClose}
-      />
-
-      {/* Slide-in Left Drawer */}
-      <aside className="fixed top-0 left-0 bottom-0 z-50 w-[88vw] max-w-sm sm:w-96 bg-zinc-950/95 border-r border-zinc-800 shadow-2xl flex flex-col backdrop-blur-xl animate-in slide-in-from-left duration-250 select-none">
-        {/* Drawer Header */}
-        <div className="p-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/60">
+      {/* ========================================================================= */}
+      {/* BUILD PRESETS RECALL SECTION (Embedded directly in main page flow) */}
+      {/* ========================================================================= */}
+      <section className="w-full bg-zinc-950/90 border border-zinc-800/90 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-md mb-4 sm:mb-6 select-none animate-in fade-in duration-200">
+        {/* Section Header */}
+        <div className="p-3 sm:p-4 border-b border-zinc-800/80 flex flex-wrap items-center justify-between gap-2.5 bg-zinc-900/60">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400">
+            <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
               <Save className="w-4 h-4" />
             </div>
             <div>
@@ -446,7 +439,24 @@ export const ElementPresetDrawer: React.FC<ElementPresetDrawerProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          {/* Unsaved changes indicator banner */}
+          {hasUnsavedChanges && currentActivePreset && (
+            <div className="px-2.5 py-1 rounded-lg bg-amber-950/40 border border-amber-500/40 flex items-center gap-2 text-[11px] text-amber-300 animate-in fade-in duration-150">
+              <span className="flex items-center gap-1.5 truncate">
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>Preset {currentActivePreset.slot} ada perubahan belum disimpan</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => handleSaveSlot(currentActivePreset.element, currentActivePreset.slot)}
+                className="px-2 py-0.5 rounded bg-amber-500 text-black font-bold text-[10px] hover:bg-amber-400 transition-colors cursor-pointer shrink-0"
+              >
+                Save Now
+              </button>
+            </div>
+          )}
+
+          <div className="flex items-center gap-1.5 ml-auto">
             <button
               type="button"
               onClick={handleWipeAllPresets}
@@ -458,81 +468,49 @@ export const ElementPresetDrawer: React.FC<ElementPresetDrawerProps> = ({
 
             <button
               type="button"
-              onClick={() => setIsFirebaseModalOpen(true)}
-              className={`px-2 py-1 rounded-lg border transition-all cursor-pointer flex items-center gap-1.5 text-xs ${
-                isCloudConnected
-                  ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/25'
-                  : 'bg-zinc-900 border-zinc-700/80 text-zinc-400 hover:text-orange-400 hover:border-orange-500/40'
-              }`}
-              title={isCloudConnected ? `Firestore Cloud Database: Online (User: ${username || 'default'})` : 'Hubungkan Firebase Database'}
-            >
-              <Cloud className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline font-mono text-[10.5px]">
-                {isCloudConnected ? 'Cloud' : 'Connect'}
-              </span>
-            </button>
-
-            <button
-              type="button"
               onClick={onClose}
               className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+              title="Tutup Presets"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* Current Trekker Indicator Banner */}
-        <div className="p-3 mx-3 mt-3 rounded-xl bg-zinc-900/80 border border-zinc-800 flex items-center justify-between">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <img
-              src={getCharacterHeadUrl(mainChar.id)}
-              alt={mainChar.name}
-              className="w-8 h-8 rounded-lg object-cover border border-zinc-700 shrink-0"
-            />
-            <div className="min-w-0">
-              <span className="text-[10px] text-zinc-400 block font-mono">
-                Main Trekker:
-              </span>
-              <span className="text-xs font-bold text-zinc-100 truncate block">
-                {mainChar.name}
+        {/* Main Trekker & Element Selection Bar */}
+        <div className="p-3 border-b border-zinc-800/60 bg-zinc-900/30 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+          {/* Current Trekker Indicator */}
+          <div className="flex items-center justify-between md:justify-start gap-2.5 px-3 py-1.5 rounded-xl bg-zinc-900/80 border border-zinc-800 shrink-0">
+            <div className="flex items-center gap-2 min-w-0">
+              <img
+                src={getCharacterHeadUrl(mainChar.id)}
+                alt={mainChar.name}
+                className="w-7 h-7 rounded-lg object-cover border border-zinc-700 shrink-0"
+              />
+              <div className="min-w-0">
+                <span className="text-[9.5px] text-zinc-400 block font-mono leading-none">
+                  Main Trekker:
+                </span>
+                <span className="text-xs font-bold text-zinc-100 truncate block mt-0.5">
+                  {mainChar.name}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-zinc-950 border border-zinc-700/80 shrink-0">
+              <img
+                src={getElementIconUrl(mainChar.element)}
+                alt={mainChar.element}
+                className="w-3.5 h-3.5"
+              />
+              <span className={`text-[10px] font-bold font-mono ${currentElemColor.text}`}>
+                {mainChar.element}
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-950 border border-zinc-700/80 shrink-0">
-            <img
-              src={getElementIconUrl(mainChar.element)}
-              alt={mainChar.element}
-              className="w-3.5 h-3.5"
-            />
-            <span className={`text-[10px] font-bold font-mono ${currentElemColor.text}`}>
-              {mainChar.element}
-            </span>
-          </div>
-        </div>
-
-        {hasUnsavedChanges && currentActivePreset && (
-          <div className="mx-3 mt-2 px-2.5 py-1.5 rounded-lg bg-amber-950/40 border border-amber-500/40 flex items-center justify-between text-[11px] text-amber-300 animate-in fade-in duration-150">
-            <span className="flex items-center gap-1.5 truncate">
-              <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span>Preset {currentActivePreset.slot} ada perubahan belum disimpan</span>
-            </span>
-            <button
-              type="button"
-              onClick={() => handleSaveSlot(currentActivePreset.element, currentActivePreset.slot)}
-              className="px-2 py-0.5 rounded bg-amber-500 text-black font-bold text-[10px] hover:bg-amber-400 transition-colors cursor-pointer shrink-0 ml-1.5"
-            >
-              Save Now
-            </button>
-          </div>
-        )}
-
-        <div className="p-3 pb-1">
-          <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider block mb-1.5">
-            Pilih Elemen:
-          </span>
-          <div className="grid grid-cols-6 gap-1 bg-zinc-900/80 p-1 rounded-xl border border-zinc-800">
+          {/* Element Filter Grid / Strip */}
+          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar bg-zinc-900/80 p-1 rounded-xl border border-zinc-800">
             {ELEMENTS_LIST.map((elem) => {
               const isSelected = selectedElement === elem.id;
               const isMainCharElem = mainChar.element === elem.id;
@@ -543,7 +521,7 @@ export const ElementPresetDrawer: React.FC<ElementPresetDrawerProps> = ({
                   type="button"
                   onClick={() => setSelectedElement(elem.id)}
                   title={`${elem.name} (${elem.label})${isMainCharElem ? ' — Elemen Main Trekker' : ''}`}
-                  className={`p-1.5 rounded-lg flex flex-col items-center justify-center transition-all cursor-pointer relative ${
+                  className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer relative shrink-0 ${
                     isSelected
                       ? `${elem.bg} ${elem.border} border ring-1 ring-white/20 shadow-sm`
                       : 'hover:bg-zinc-800/60 opacity-60 hover:opacity-100'
@@ -554,13 +532,13 @@ export const ElementPresetDrawer: React.FC<ElementPresetDrawerProps> = ({
                     alt={elem.name}
                     className="w-4 h-4 object-contain"
                   />
-                  <span className={`text-[9px] font-bold mt-0.5 ${elem.color}`}>
+                  <span className={`text-[10.5px] font-bold ${elem.color}`}>
                     {elem.name}
                   </span>
 
                   {/* Dot indicator if main trekker matches */}
                   {isMainCharElem && (
-                    <span className="absolute -top-1 -right-0.5 w-2 h-2 rounded-full bg-amber-400 ring-1 ring-zinc-950" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 ring-1 ring-zinc-950 ml-0.5" />
                   )}
                 </button>
               );
@@ -568,18 +546,14 @@ export const ElementPresetDrawer: React.FC<ElementPresetDrawerProps> = ({
           </div>
         </div>
 
-        {/* Scrollable Element Frame Section with the 3 Square Buttons */}
-        <div className="flex-1 overflow-y-auto p-3 space-y-4 custom-scrollbar">
+        {/* 3 Preset Slots */}
+        <div className="p-3 sm:p-4">
           {ELEMENTS_LIST.filter((elem) => elem.id === selectedElement).map((elem) => {
             const slotsData = presetsMap?.[elem.id] || { 1: null, 2: null, 3: null };
 
             return (
-              <div
-                key={elem.id}
-                className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-3.5 space-y-3"
-              >
-                {/* Frame Title */}
-                <div className="flex items-center justify-between pb-2 border-b border-zinc-800/80">
+              <div key={elem.id} className="space-y-3">
+                <div className="flex items-center justify-between pb-1">
                   <div className="flex items-center gap-2">
                     <img
                       src={getElementIconUrl(elem.id)}
@@ -612,8 +586,8 @@ export const ElementPresetDrawer: React.FC<ElementPresetDrawerProps> = ({
                   )}
                 </div>
 
-                {/* 3 Square Buttons Frame (Kotak 1, Kotak 2, Kotak 3) */}
-                <div className="grid grid-cols-3 gap-2.5">
+                {/* 3 Preset Cards Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {([1, 2, 3] as const).map((slotNum) => {
                     const slotData = slotsData[slotNum];
                     const key = `${elem.id}_${slotNum}`;
@@ -623,30 +597,28 @@ export const ElementPresetDrawer: React.FC<ElementPresetDrawerProps> = ({
 
                     // EMPTY SLOT
                     if (!slotData) {
-                      // Non-matching element: Locked empty slot
                       if (!isMatchingElement) {
                         return (
                           <button
                             key={slotNum}
                             type="button"
                             onClick={() => handleSlotClick(elem.id, slotNum)}
-                            className="aspect-square rounded-xl border border-dashed border-zinc-800/80 bg-zinc-950/30 opacity-40 hover:opacity-80 transition-all flex flex-col items-center justify-center p-2 cursor-not-allowed group relative"
+                            className="h-28 sm:h-32 rounded-xl border border-dashed border-zinc-800/80 bg-zinc-950/30 opacity-40 hover:opacity-80 transition-all flex flex-col items-center justify-center p-3 cursor-not-allowed group relative"
                             title={`Slot terkunci: Main Trekker (${mainChar.name}) berelemen ${mainChar.element}. Hanya Trekker berelemen ${elem.name} yang dapat disimpan di sini.`}
                           >
                             <div className="p-2 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-600 mb-1 group-hover:text-rose-400 group-hover:border-rose-500/40 transition-colors">
                               <Lock className="w-4 h-4" />
                             </div>
-                            <span className="text-[10px] font-mono font-bold text-zinc-500">
+                            <span className="text-[11px] font-mono font-bold text-zinc-500">
                               Preset {slotNum}
                             </span>
-                            <span className="text-[9px] text-zinc-600 font-medium">
+                            <span className="text-[9.5px] text-zinc-600 font-medium">
                               Khusus {elem.name}
                             </span>
                           </button>
                         );
                       }
 
-                      // Matching element: Normal clickable empty slot to save
                       return (
                         <button
                           key={slotNum}
@@ -654,17 +626,17 @@ export const ElementPresetDrawer: React.FC<ElementPresetDrawerProps> = ({
                           onClick={() => handleSlotClick(elem.id, slotNum)}
                           onMouseEnter={() => setHoveredSlotKey(key)}
                           onMouseLeave={() => setHoveredSlotKey(null)}
-                          className="aspect-square rounded-xl border border-dashed border-zinc-700 hover:border-amber-400 bg-zinc-950/40 hover:bg-zinc-900/80 transition-all flex flex-col items-center justify-center p-2 cursor-pointer group shadow-xs relative"
+                          className="h-28 sm:h-32 rounded-xl border border-dashed border-zinc-700 hover:border-amber-400 bg-zinc-950/40 hover:bg-zinc-900/80 transition-all flex flex-col items-center justify-center p-3 cursor-pointer group shadow-xs relative"
                           title={`Simpan build saat ini ke Preset ${slotNum}`}
                         >
                           <div className="p-2 rounded-full bg-zinc-900 border border-zinc-700 text-zinc-500 group-hover:text-amber-400 group-hover:border-amber-400/50 transition-colors mb-1">
                             <Plus className="w-4 h-4" />
                           </div>
-                          <span className="text-[10px] font-mono font-bold text-zinc-500 group-hover:text-zinc-300 transition-colors">
+                          <span className="text-[11px] font-mono font-bold text-zinc-500 group-hover:text-zinc-300 transition-colors">
                             Preset {slotNum}
                           </span>
-                          <span className="text-[9px] text-zinc-600 group-hover:text-amber-400/80 transition-colors">
-                            + Simpan
+                          <span className="text-[10px] text-zinc-600 group-hover:text-amber-400/80 transition-colors">
+                            + Simpan Build Ini
                           </span>
                         </button>
                       );
@@ -677,9 +649,9 @@ export const ElementPresetDrawer: React.FC<ElementPresetDrawerProps> = ({
                         onClick={() => handleSlotClick(elem.id, slotNum)}
                         onMouseEnter={() => setHoveredSlotKey(key)}
                         onMouseLeave={() => setHoveredSlotKey(null)}
-                        className={`aspect-square rounded-xl border relative overflow-hidden transition-all cursor-pointer group select-none shadow-md ${
+                        className={`h-28 sm:h-32 rounded-xl border relative overflow-hidden transition-all cursor-pointer group select-none shadow-md ${
                           isActive
-                            ? 'border-amber-400 ring-2 ring-amber-400/70 shadow-[0_0_12px_rgba(251,191,36,0.35)]'
+                            ? 'border-amber-400 ring-2 ring-amber-400/70 shadow-[0_0_16px_rgba(251,191,36,0.35)]'
                             : 'border-zinc-750 hover:border-zinc-500 bg-zinc-950'
                         }`}
                         title={
@@ -696,15 +668,16 @@ export const ElementPresetDrawer: React.FC<ElementPresetDrawerProps> = ({
                         />
 
                         {/* Top Gradient & Slot Number Badge */}
-                        <div className="absolute top-0 inset-x-0 h-6 bg-gradient-to-b from-black/80 to-transparent pointer-events-none" />
-                        <span className="absolute top-1 left-1.5 px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-black/80 border border-zinc-700/80 text-zinc-200 shadow-xs z-10">
+                        <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-black/85 to-transparent pointer-events-none" />
+                        <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded text-[9.5px] font-mono font-bold bg-black/80 border border-zinc-700/80 text-zinc-200 shadow-xs z-10">
                           #{slotNum}
                         </span>
 
                         {/* Active Indicator Pin (Only if matching element) */}
                         {isActive && (
-                          <span className="absolute top-1 right-1.5 px-1 rounded-full text-[8.5px] font-bold bg-amber-500 text-black shadow-xs z-10 flex items-center gap-0.5">
-                            <Check className="w-2.5 h-2.5 stroke-[3]" />
+                          <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500 text-black shadow-xs z-10 flex items-center gap-1 font-mono">
+                            <Check className="w-3 h-3 stroke-[3]" />
+                            Aktif
                           </span>
                         )}
 
@@ -713,23 +686,19 @@ export const ElementPresetDrawer: React.FC<ElementPresetDrawerProps> = ({
                           type="button"
                           onClick={(e) => handleDeleteSlot(elem.id, slotNum, e)}
                           title="Hapus Preset ini"
-                          className="absolute top-1 right-1 p-1 rounded bg-black/80 hover:bg-rose-950 border border-zinc-700 hover:border-rose-500 text-zinc-400 hover:text-rose-300 opacity-0 group-hover:opacity-100 transition-opacity z-20 cursor-pointer"
+                          className="absolute top-2 right-2 p-1 rounded-md bg-black/80 hover:bg-rose-950 border border-zinc-700 hover:border-rose-500 text-zinc-400 hover:text-rose-300 opacity-0 group-hover:opacity-100 transition-opacity z-20 cursor-pointer"
                         >
-                          <Trash2 className="w-2.5 h-2.5" />
+                          <Trash2 className="w-3 h-3" />
                         </button>
 
                         {/* Bottom Gradient with Character Name */}
-                        <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent pt-3 pb-1 px-1 text-center pointer-events-none">
-                          <span className="text-[10px] font-bold text-white block truncate leading-tight">
+                        <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/95 via-black/75 to-transparent pt-4 pb-1.5 px-2 text-center pointer-events-none">
+                          <span className="text-[11px] font-bold text-white block truncate leading-tight">
                             {slotData.characterName}
                           </span>
                         </div>
 
-                        {/* ============================================================ */}
-                        {/* HOVER OVERLAY WITH OPACITY 70% AS REQUESTED */}
-                        {/* If cursor aims at active slot (and matching element): Save logo inside photo (opacity 70) */}
-                        {/* If cursor aims at another slot: Switch logo inside photo */}
-                        {/* ============================================================ */}
+                        {/* HOVER OVERLAY WITH OPACITY 70% */}
                         <div
                           className={`absolute inset-0 bg-black/70 backdrop-blur-xs flex flex-col items-center justify-center gap-1 transition-opacity z-10 ${
                             isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
@@ -737,16 +706,16 @@ export const ElementPresetDrawer: React.FC<ElementPresetDrawerProps> = ({
                         >
                           {isActive ? (
                             <>
-                              <Save className="w-6 h-6 text-emerald-400 animate-in zoom-in-75 duration-150" />
-                              <span className="text-[9.5px] font-bold text-white uppercase tracking-wider">
-                                Save
+                              <Save className="w-7 h-7 text-emerald-400 animate-in zoom-in-75 duration-150" />
+                              <span className="text-[10px] font-bold text-white uppercase tracking-wider">
+                                Save / Overwrite
                               </span>
                             </>
                           ) : (
                             <>
-                              <ArrowLeftRight className="w-6 h-6 text-amber-400 animate-in zoom-in-75 duration-150" />
-                              <span className="text-[9.5px] font-bold text-white uppercase tracking-wider">
-                                Switch
+                              <ArrowLeftRight className="w-7 h-7 text-amber-400 animate-in zoom-in-75 duration-150" />
+                              <span className="text-[10px] font-bold text-white uppercase tracking-wider">
+                                Switch / Load
                               </span>
                             </>
                           )}
@@ -760,20 +729,20 @@ export const ElementPresetDrawer: React.FC<ElementPresetDrawerProps> = ({
           })}
         </div>
 
-        {/* Drawer Footer Guide */}
-        <div className="p-3 border-t border-zinc-800 bg-zinc-950 text-xs text-zinc-400 flex items-center justify-between">
-          <span className="text-[11px] text-zinc-500">
-            Arahkan cursor ke kotak: <strong>Save</strong> (aktif) / <strong>Switch</strong>.
+        {/* Section Footer Guide */}
+        <div className="p-2.5 sm:p-3 border-t border-zinc-800/80 bg-zinc-950/70 text-xs text-zinc-400 flex items-center justify-between">
+          <span className="text-[10.5px] text-zinc-500">
+            Arahkan cursor ke kotak: <strong className="text-emerald-400 font-semibold">Save</strong> (aktif) / <strong className="text-amber-400 font-semibold">Switch</strong>.
           </span>
           <button
             type="button"
             onClick={onClose}
-            className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium cursor-pointer transition-colors"
+            className="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 text-xs font-medium cursor-pointer transition-colors border border-zinc-800"
           >
             Tutup
           </button>
         </div>
-      </aside>
+      </section>
 
       {/* ========================================================================= */}
       {/* CONFIRMATION MODAL: "Are you sure to Switch before Saving?" */}
@@ -849,22 +818,6 @@ export const ElementPresetDrawer: React.FC<ElementPresetDrawerProps> = ({
           </div>
         </div>
       )}
-      {/* ========================================================================= */}
-      {/* FIREBASE FIRESTORE CLOUD DATABASE MODAL */}
-      {/* ========================================================================= */}
-      <FirebaseModal
-        isOpen={isFirebaseModalOpen}
-        onClose={() => {
-          setIsFirebaseModalOpen(false);
-          setIsCloudConnected(firebaseService.isConfigured());
-        }}
-        presetsMap={presetsMap}
-        onApplyCloudPresets={(cloudMap) => {
-          savePresetsMap(cloudMap);
-        }}
-        showToast={showToast}
-        username={username}
-      />
     </>
   );
 };

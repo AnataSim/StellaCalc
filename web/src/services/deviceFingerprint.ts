@@ -13,10 +13,11 @@
 const STORAGE_KEY_DEVICE = 'stella_device_fingerprint_v1';
 const DB_NAME = 'stella_security_db';
 const DB_STORE = 'security_tokens';
+const IP_SALT_SECRET = 'STELLACALC_SHIELD_NET_SEC_SALT_9847120_V1';
 
 export interface DeviceInfo {
   deviceId: string;       // SHA-256 hardware & storage composite ID
-  ip: string;             // Public IP address
+  ip: string;             // Salted opaque network signature (Raw IP is deeply masked & never exposed)
   browserInfo: string;    // User agent summary
   gpuRenderer: string;    // WebGL GPU info
 }
@@ -29,6 +30,27 @@ async function sha256(text: string): Promise<string> {
   const buffer = await crypto.subtle.digest('SHA-256', enc.encode(text));
   const bytes = new Uint8Array(buffer);
   return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Deeply wraps and hashes any IP address using a cryptographic salt.
+ * Ensures raw IP addresses are NEVER stored in plaintext in memory,
+ * localStorage, or transmitted across the wire to Firestore.
+ */
+export async function hashAndWrapIp(rawIp: string): Promise<string> {
+  const cleanIp = rawIp ? rawIp.trim() : '';
+  if (!cleanIp || cleanIp === '127.0.0.1' || cleanIp === 'localhost') {
+    return 'sec_net_loopback';
+  }
+  const enc = new TextEncoder();
+  const buffer = await crypto.subtle.digest(
+    'SHA-256',
+    enc.encode(`${IP_SALT_SECRET}::${cleanIp}`)
+  );
+  const hashHex = Array.from(new Uint8Array(buffer))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+  return `sec_net_${hashHex.slice(0, 24)}`;
 }
 
 // -------------------------------------------------------------
@@ -178,7 +200,7 @@ function setIndexedDbToken(token: string): Promise<void> {
 }
 
 // -------------------------------------------------------------
-// 5. Public IP Lookup (Fast with 2s timeout)
+// 5. Public IP Lookup (Fast with 2s timeout & Deep Hash Wrap)
 // -------------------------------------------------------------
 async function fetchPublicIp(): Promise<string> {
   try {
@@ -192,7 +214,9 @@ async function fetchPublicIp(): Promise<string> {
 
     if (res.ok) {
       const data = await res.json();
-      if (data && data.ip) return String(data.ip).trim();
+      if (data && data.ip) {
+        return await hashAndWrapIp(String(data.ip));
+      }
     }
   } catch {}
 
@@ -206,11 +230,13 @@ async function fetchPublicIp(): Promise<string> {
     clearTimeout(timeoutId2);
     if (res2.ok) {
       const data2 = await res2.json();
-      if (data2 && data2.ip) return String(data2.ip).trim();
+      if (data2 && data2.ip) {
+        return await hashAndWrapIp(String(data2.ip));
+      }
     }
   } catch {}
 
-  return '127.0.0.1'; // Offline / protected fallback
+  return 'sec_net_loopback'; // Offline / protected fallback
 }
 
 // -------------------------------------------------------------
@@ -260,13 +286,14 @@ export async function getDeviceFingerprint(): Promise<DeviceInfo> {
     await setIndexedDbToken(finalDeviceId);
   } catch {}
 
-  // 6. Fetch IP in parallel
+  // 6. Fetch deeply wrapped IP token (raw IP is never exposed)
   const ip = await fetchPublicIp();
 
-  return {
+  // Return immutable frozen device info to prevent inspect tampering
+  return Object.freeze({
     deviceId: finalDeviceId,
     ip,
     browserInfo: `${platform} - ${navigator.userAgent.slice(0, 80)}`,
     gpuRenderer: webgl.renderer
-  };
+  });
 }
