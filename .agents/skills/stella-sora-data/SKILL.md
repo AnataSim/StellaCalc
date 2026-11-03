@@ -5,11 +5,11 @@ description: Query and retrieve Stella Sora game data (characters, stats, skills
 
 # Stella Sora Data Knowledge & Query Engine
 
-This workspace (`e:\Code\SS`) contains datamined game data from Yostar's **Stella Sora**, maintained by `AutumnVN/ss-data`.
+This workspace (`e:\Code\SS`) contains datamined game data from Yostar's **Stella Sora**, maintained by `AutumnVN/ss-data`, consolidated in the `database/` directory.
 
 ## Important Rule: Token Preservation
-**NEVER** load entire JSON files (`character.json`, `disc.json`, `arena.json`, raw `EN/bin/` files) directly into context or via `view_file` on large ranges. `character.json` is ~8.7MB (over 2 million tokens)!
-Instead, **ALWAYS** use the built-in fast CLI `query.js` via `run_command` in `e:\Code\SS`.
+**NEVER** load entire JSON files (`database/character.json`, `database/disc.json`, raw `database/EN/bin/` files) directly into context.
+Instead, **ALWAYS** use the built-in fast CLI (`node query.js` or `node database/query.js`) via `run_command` in `e:\Code\SS`.
 
 ## Quick Query CLI Reference (`node query.js`)
 
