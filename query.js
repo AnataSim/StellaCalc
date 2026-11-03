@@ -4,3 +4,4 @@
  * Directs execution to ./database/query.js
  */
 require('./database/query.js');
+
