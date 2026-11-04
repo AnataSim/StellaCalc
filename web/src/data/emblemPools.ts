@@ -8,7 +8,7 @@ export interface EmblemStatDef {
   category: 'primary' | 'crit' | 'dmg' | 'special' | 'unique';
   unit: '%' | '' | '+Lv';
   values: [number, number, number, number]; // [Tier 1 (Green), Tier 2 (Blue), Tier 3 (Yellow), Tier 4 (Rainbow)]
-  maxTier?: EmblemTier; // Max allowed tier (e.g. Crit DMG caps at Tier 3 / Yellow 15%)
+  maxTier?: EmblemTier; // Max allowed tier (e.g. Crit DMG caps at Tier 3 / Yellow 12%)
   isUnique?: boolean;
   uniqueTarget?: 'normal' | 'main' | 'support' | 'ult' | 'talent';
 }
@@ -114,8 +114,8 @@ export const ALL_EMBLEM_STATS: { [id: string]: EmblemStatDef } = {
     name: 'Crit DMG',
     category: 'crit',
     unit: '%',
-    values: [8, 10, 15, 15],
-    maxTier: 3, // Mentok Kuning 15% (Rainbow tier tidak ada di game asli)
+    values: [8, 10, 12, 12],
+    maxTier: 3, // Mentok Kuning 12% (Rainbow tier tidak ada di game asli)
   },
   elem_dmg: {
     id: 'elem_dmg',

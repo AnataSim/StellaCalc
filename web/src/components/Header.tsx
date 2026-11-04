@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { RotateCcw, RotateCw, Save, Lock } from 'lucide-react';
 import type { UserSession } from '../services/authService';
 import { UserProfileModal } from './UserProfileModal';
+import { ChangelogModal } from './ChangelogModal';
 
 interface Props {
   onUndo: () => void;
@@ -31,6 +32,7 @@ export const Header: React.FC<Props> = ({
   showToast,
 }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isChangelogOpen, setIsChangelogOpen] = useState(false);
 
   return (
     <header className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur sticky top-0 z-40 px-3 sm:px-4 lg:px-8 py-2 sm:py-3">
@@ -43,6 +45,17 @@ export const Header: React.FC<Props> = ({
 
         {/* Action Buttons */}
         <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Website Version Badge (Click to open Changelog) */}
+          <button
+            type="button"
+            onClick={() => setIsChangelogOpen(true)}
+            className="h-8 sm:h-9 px-2 sm:px-2.5 flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/90 hover:bg-zinc-800 hover:border-orange-500/50 text-zinc-300 hover:text-orange-400 transition-all font-mono text-xs font-bold select-none cursor-pointer group shadow-sm"
+            title="Versi Website v26.11.1 (Klik untuk Changelog)"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 group-hover:bg-orange-400 group-hover:scale-125 transition-all shadow-[0_0_6px_rgba(52,211,153,0.5)]" />
+            <span>v26.11.1</span>
+          </button>
+
           {/* User Profile & Security Badge with anchored Mini Frame Popover */}
           {userSession && (
             <div className="relative">
@@ -134,6 +147,12 @@ export const Header: React.FC<Props> = ({
           )}
         </div>
       </div>
+
+      {/* Changelog Modal */}
+      <ChangelogModal
+        isOpen={isChangelogOpen}
+        onClose={() => setIsChangelogOpen(false)}
+      />
     </header>
   );
 };

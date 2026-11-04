@@ -5,10 +5,8 @@ import { getPotentialIconUrl, getCharacterHeadUrl } from '../utils/assetUrl';
 import { ALL_EMBLEM_STATS } from '../data/emblemPools';
 import {
   decodePresetShareCode,
-  type DecodedPresetResult,
-  TOP_BLITZ_PRESETS
+  type DecodedPresetResult
 } from '../utils/presetDecoder';
-import potentialPresetsData from '../data/potentialPresets.json';
 import {
   Sparkles,
   Search,
@@ -20,9 +18,6 @@ import {
   CheckCircle2,
   AlertCircle,
   ClipboardPaste,
-  Bookmark,
-  Trash2,
-  Save,
   ChevronDown,
   ChevronUp,
   Star
@@ -593,19 +588,6 @@ function getPotentialActiveStats(p: PotentialData, level = 1): PotentialActiveSt
   return statsList;
 }
 
-export interface UserSavedPreset {
-  id: string;
-  name: string;
-  date: string;
-  characterId: number;
-  characterName: string;
-  build: {
-    potentialLevels: Record<number, number>;
-    discs: BuildState['discs'];
-    harmonyNoteLevels: Record<string, number>;
-  };
-}
-
 export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, activeTeamSlot: _activeTeamSlot = 0 }) => {
   const activeTab = 'all';
   const [searchQuery, setSearchQuery] = useState('');
@@ -663,7 +645,6 @@ export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, 
   // Preset import modal state
   const [showPresetModal, setShowPresetModal] = useState(false);
   const [presetInput, setPresetInput] = useState('');
-  const [selectedCharPresetId, setSelectedCharPresetId] = useState<string>('');
   const [selectedMemberIdx, setSelectedMemberIdx] = useState<0 | 1 | 2>(0);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Record<number, boolean>>({});
@@ -690,74 +671,6 @@ export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, 
       });
       setExpandedNodes(allMap);
     }
-  };
-
-  // Custom User Saved Presets (Local Storage)
-  const [savedCustomPresets, setSavedCustomPresets] = useState<UserSavedPreset[]>(() => {
-    try {
-      const raw = localStorage.getItem('stella_user_saved_presets');
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  });
-  const [newPresetName, setNewPresetName] = useState('');
-  const [isSavingPreset, setIsSavingPreset] = useState(false);
-
-  const handleSaveCurrentBuild = () => {
-    const name = newPresetName.trim() || `${character.name} Build (${new Date().toLocaleDateString()})`;
-    const newPreset: UserSavedPreset = {
-      id: `custom_${Date.now()}`,
-      name,
-      date: new Date().toLocaleDateString(undefined, {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      }),
-      characterId: character.id,
-      characterName: character.name,
-      build: {
-        potentialLevels: { ...(build.potentialLevels || {}) },
-        discs: { ...build.discs },
-        harmonyNoteLevels: { ...build.harmonyNoteLevels }
-      }
-    };
-    const updated = [newPreset, ...savedCustomPresets];
-    setSavedCustomPresets(updated);
-    try {
-      localStorage.setItem('stella_user_saved_presets', JSON.stringify(updated));
-    } catch (e) {
-      console.warn('Failed to save to localStorage:', e);
-    }
-    setNewPresetName('');
-    setIsSavingPreset(false);
-    setToastMessage(`Saved preset "${name}" to My Presets!`);
-    setTimeout(() => setToastMessage(null), 3000);
-  };
-
-  const handleDeleteSavedPreset = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    const updated = savedCustomPresets.filter((p) => p.id !== id);
-    setSavedCustomPresets(updated);
-    try {
-      localStorage.setItem('stella_user_saved_presets', JSON.stringify(updated));
-    } catch (e) {
-      console.warn('Failed to delete from localStorage:', e);
-    }
-  };
-
-  const handleLoadCustomPreset = (preset: UserSavedPreset) => {
-    onChangeBuild((prev) => ({
-      ...prev,
-      characterId: preset.characterId,
-      potentialLevels: { ...preset.build.potentialLevels },
-      discs: { ...preset.build.discs },
-      harmonyNoteLevels: { ...preset.build.harmonyNoteLevels }
-    }));
-    setToastMessage(`Loaded custom preset "${preset.name}"!`);
-    setTimeout(() => setToastMessage(null), 3000);
-    setShowPresetModal(false);
   };
 
   const potentials = character.potential;
@@ -844,32 +757,11 @@ export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, 
     if (!presetInput.trim()) {
       return {
         success: false,
-        error: 'Enter or paste any Stella Sora Share Code, or choose a Trekker preset below.'
+        error: 'Masukkan atau tempel ShareCode Stella Sora (27-byte Base64).'
       };
     }
     return decodePresetShareCode(presetInput.trim());
   }, [presetInput]);
-
-  // Official presets for current character
-  const charOfficialPresets = useMemo(() => {
-    return Object.values(potentialPresetsData).filter(
-      (p: any) => p.characterId === character.id
-    );
-  }, [character.id]);
-
-  // All official presets grouped by character name for universal selection
-  const allTrekkerPresets = useMemo(() => {
-    const map = new Map<string, { id: number; characterId: number; characterName: string; name: string; shareCode: string }[]>();
-    for (const p of Object.values(potentialPresetsData) as any[]) {
-      if (!map.has(p.characterName)) {
-        map.set(p.characterName, []);
-      }
-      map.get(p.characterName)!.push(p);
-    }
-    return Array.from(map.entries())
-      .map(([charName, presets]) => ({ charName, presets }))
-      .sort((a, b) => a.charName.localeCompare(b.charName));
-  }, []);
 
   const categoriesData = useMemo(() => {
     if (!potentials) return [];
@@ -1198,7 +1090,7 @@ export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, 
                     </span>
                   </h3>
                   <p className="text-[11px] text-zinc-400">
-                    Impor kode preset game atau pilih rekomendasi build
+                    Impor kode preset game (27-byte Base64) atau URL build
                   </p>
                 </div>
               </div>
@@ -1206,6 +1098,7 @@ export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, 
                 type="button"
                 onClick={() => setShowPresetModal(false)}
                 className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800/80 transition-colors cursor-pointer"
+                title="Tutup"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1219,14 +1112,11 @@ export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, 
                   <span>Kode Preset / URL:</span>
                   <span className="text-[10px] text-zinc-500 font-mono">Format Stella Sora (27-byte Base64)</span>
                 </label>
-                <div className="flex items-center rounded-xl border border-zinc-750 bg-zinc-900/90 focus-within:border-pink-500/70 focus-within:ring-1 focus-within:ring-pink-500/30 transition-all p-1">
+                <div className="flex items-center rounded-xl border border-zinc-750 bg-zinc-900/90 focus-within:border-pink-500/70 focus-within:ring-2 focus-within:ring-pink-500/20 transition-all p-1.5 gap-1.5">
                   <input
                     type="text"
                     value={presetInput}
-                    onChange={(e) => {
-                      setPresetInput(e.target.value);
-                      setSelectedCharPresetId('');
-                    }}
+                    onChange={(e) => setPresetInput(e.target.value)}
                     placeholder="Paste ShareCode (contoh: AAAAogAAAJs... atau #build=...)"
                     className="flex-1 px-3 py-1.5 text-xs font-mono bg-transparent text-zinc-100 placeholder-zinc-600 focus:outline-none"
                     autoFocus
@@ -1238,13 +1128,12 @@ export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, 
                         const text = await navigator.clipboard.readText();
                         if (text) {
                           setPresetInput(text.trim());
-                          setSelectedCharPresetId('');
                         }
                       } catch (err) {
                         console.warn('Clipboard read failed:', err);
                       }
                     }}
-                    className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-pink-500/20 hover:bg-pink-500/30 text-pink-300 border border-pink-500/40 transition-all flex items-center gap-1 shrink-0 cursor-pointer"
+                    className="px-3 py-1.5 text-xs font-bold rounded-lg bg-pink-500/20 hover:bg-pink-500/30 text-pink-300 border border-pink-500/40 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer shadow-xs"
                     title="Paste dari Clipboard"
                   >
                     <ClipboardPaste className="w-3.5 h-3.5" />
@@ -1253,11 +1142,8 @@ export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, 
                   {presetInput && (
                     <button
                       type="button"
-                      onClick={() => {
-                        setPresetInput('');
-                        setSelectedCharPresetId('');
-                      }}
-                      className="p-1 text-zinc-400 hover:text-white rounded-md hover:bg-zinc-800 transition-colors ml-1 cursor-pointer"
+                      onClick={() => setPresetInput('')}
+                      className="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors shrink-0 cursor-pointer"
                       title="Hapus"
                     >
                       <X className="w-3.5 h-3.5" />
@@ -1266,185 +1152,20 @@ export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, 
                 </div>
               </div>
 
-              {/* Preset Selector & Quick Picks */}
-              <div className="space-y-2.5 p-3 rounded-xl bg-zinc-900/50 border border-zinc-850">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <span className="text-[11px] font-bold text-zinc-300 flex items-center gap-1.5">
-                    <FileCode className="w-3.5 h-3.5 text-pink-400" />
-                    Pilih Rekomendasi Build:
-                  </span>
-                  <select
-                    value={selectedCharPresetId}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setSelectedCharPresetId(val);
-                      if (val) {
-                        if (val.startsWith('custom_')) {
-                          const custom = savedCustomPresets.find((p) => p.id === val);
-                          if (custom) {
-                            handleLoadCustomPreset(custom);
-                          }
-                          return;
-                        }
-                        const blitzPreset = TOP_BLITZ_PRESETS.find((p) => p.id === val);
-                        if (blitzPreset) {
-                          setPresetInput(blitzPreset.shareCode);
-                        } else if ((potentialPresetsData as any)[val]) {
-                          setPresetInput((potentialPresetsData as any)[val].shareCode);
-                        }
-                      }
-                    }}
-                    className="bg-zinc-900 border border-zinc-750 text-zinc-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-pink-500 font-medium cursor-pointer"
-                  >
-                    <option value="">-- Pilih Preset atau Build Tersimpan --</option>
-                    {savedCustomPresets.length > 0 && (
-                      <optgroup label="⭐ Build Tersimpan Saya">
-                        {savedCustomPresets.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            ★ {p.name} ({p.characterName} · {p.date})
-                          </option>
-                        ))}
-                      </optgroup>
-                    )}
-                    <optgroup label="🏆 Meta Clears Boss Blitz (Top Rank)">
-                      {TOP_BLITZ_PRESETS.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          #{p.rank} {p.player} · Skor: {p.score.toLocaleString()} ({p.charNames})
-                        </option>
-                      ))}
-                    </optgroup>
-                    <optgroup label={`Trekker Saat Ini (${character.name})`}>
-                      {charOfficialPresets.map((p: any) => (
-                        <option key={p.id} value={p.id}>
-                          {character.name} - {p.name}
-                        </option>
-                      ))}
-                    </optgroup>
-                    {allTrekkerPresets
-                      .filter((g) => g.charName !== character.name)
-                      .map(({ charName, presets }) => (
-                        <optgroup key={charName} label={charName}>
-                          {presets.map((p: any) => (
-                            <option key={p.id} value={p.id}>
-                              {charName} - {p.name}
-                            </option>
-                          ))}
-                        </optgroup>
-                      ))}
-                  </select>
-                </div>
-
-                {/* Quick pills */}
-                <div className="flex items-center gap-1.5 flex-wrap pt-1.5 border-t border-zinc-850/80">
-                  <span className="text-[10px] text-zinc-500 font-medium">Quick:</span>
-                  {charOfficialPresets.map((p: any) => (
-                    <button
-                      key={p.id}
-                      type="button"
-                      onClick={() => {
-                        setPresetInput(p.shareCode);
-                        setSelectedCharPresetId(String(p.id));
-                      }}
-                      className={`text-[10px] px-2 py-0.5 rounded-md border font-mono transition-all cursor-pointer ${
-                        selectedCharPresetId === String(p.id)
-                          ? 'bg-pink-500/20 border-pink-500 text-pink-300'
-                          : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
-                      }`}
-                    >
-                      {p.name}
-                    </button>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPresetInput('AAAAogAAAJsAAABrzbADYYYYyASAcAK2ABIAY');
-                      setSelectedCharPresetId('pagan_t2_1340522');
-                    }}
-                    className="text-[10px] px-2 py-0.5 rounded-md bg-amber-950/30 border border-amber-500/40 hover:border-amber-400 text-amber-300 font-mono transition-all cursor-pointer"
-                  >
-                    ★ Top Blitz 1.34M
-                  </button>
-                </div>
-
-                {/* Save build inline toggle */}
-                <div className="pt-2 border-t border-zinc-850/80 flex items-center justify-between text-xs">
-                  {!isSavingPreset ? (
-                    <button
-                      type="button"
-                      onClick={() => setIsSavingPreset(true)}
-                      className="text-[11px] font-semibold text-zinc-400 hover:text-amber-400 transition-colors flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <Bookmark className="w-3.5 h-3.5 text-amber-400" />
-                      <span>Simpan build saat ini ke Preset Saya</span>
-                    </button>
-                  ) : (
-                    <div className="flex items-center gap-2 w-full">
-                      <input
-                        type="text"
-                        value={newPresetName}
-                        onChange={(e) => setNewPresetName(e.target.value)}
-                        placeholder={`Nama build (contoh: Blitz ${character.name})`}
-                        className="px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 flex-1"
-                        autoFocus
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') handleSaveCurrentBuild();
-                          if (e.key === 'Escape') setIsSavingPreset(false);
-                        }}
-                      />
-                      <button
-                        type="button"
-                        onClick={handleSaveCurrentBuild}
-                        className="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center gap-1"
-                      >
-                        <Save className="w-3 h-3" />
-                        <span>Simpan</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setIsSavingPreset(false)}
-                        className="px-2 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 text-xs border border-zinc-800 cursor-pointer"
-                      >
-                        Batal
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* Saved custom presets chips */}
-                {savedCustomPresets.length > 0 && (
-                  <div className="pt-2 border-t border-zinc-850/80 space-y-1.5">
-                    <span className="text-[10px] text-amber-400/90 font-bold uppercase tracking-wider flex items-center gap-1">
-                      <Bookmark className="w-3 h-3" />
-                      Build Tersimpan Saya:
-                    </span>
-                    <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
-                      {savedCustomPresets.map((sp) => (
-                        <div
-                          key={sp.id}
-                          className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 text-[11px]"
-                        >
-                          <button
-                            type="button"
-                            onClick={() => handleLoadCustomPreset(sp)}
-                            className="hover:text-amber-300 font-semibold truncate max-w-36 text-left cursor-pointer"
-                            title={`Load ${sp.name} (${sp.characterName})`}
-                          >
-                            ★ {sp.name}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={(e) => handleDeleteSavedPreset(sp.id, e)}
-                            className="text-zinc-500 hover:text-rose-400 p-0.5 rounded cursor-pointer"
-                            title="Hapus"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+              {/* Guide/Instruction when input is empty */}
+              {!presetInput.trim() && (
+                <div className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-850 space-y-2 text-xs text-zinc-400">
+                  <div className="flex items-center gap-2 font-bold text-zinc-300 text-xs">
+                    <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+                    <span>Petunjuk ShareCode:</span>
                   </div>
-                )}
-              </div>
+                  <ul className="space-y-1.5 pl-4 list-disc text-[11px] text-zinc-400 leading-relaxed">
+                    <li>Salin ShareCode dari menu preset game <span className="text-zinc-200 font-medium">Stella Sora</span> atau dari URL build.</li>
+                    <li>Klik tombol <span className="text-pink-300 font-semibold">Paste</span> untuk memindai otomatis susunan potensi.</li>
+                    <li>Pratinjau level potensi Leader dan Support akan langsung ditampilkan secara transparan sebelum diterapkan.</li>
+                  </ul>
+                </div>
+              )}
 
               {/* Decoded Potentials Preview (POTENTIALS ONLY) */}
               {decodedPreset.success && decodedPreset.leader ? (
