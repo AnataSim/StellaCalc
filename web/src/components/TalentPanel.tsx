@@ -3,6 +3,7 @@ import type { BuildState, Character, PotentialData } from '../types';
 import type { BreakdownNavigationItem } from '../utils/navigation';
 import { getPotentialIconUrl, getCharacterHeadUrl } from '../utils/assetUrl';
 import { ALL_EMBLEM_STATS } from '../data/emblemPools';
+import { useLanguage } from '../contexts/LanguageContext';
 import {
   decodePresetShareCode,
   type DecodedPresetResult
@@ -589,6 +590,7 @@ function getPotentialActiveStats(p: PotentialData, level = 1): PotentialActiveSt
 }
 
 export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, activeTeamSlot: _activeTeamSlot = 0 }) => {
+  const { t } = useLanguage();
   const activeTab = 'all';
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -1084,13 +1086,13 @@ export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, 
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
-                    Preset Potensial
+                    {t('presetModalTitle')}
                     <span className="text-[10px] font-mono font-medium px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400">
                       ShareCode
                     </span>
                   </h3>
                   <p className="text-[11px] text-zinc-400">
-                    Impor kode preset game (27-byte Base64) atau URL build
+                    {t('presetModalSubtitle')}
                   </p>
                 </div>
               </div>
@@ -1098,7 +1100,7 @@ export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, 
                 type="button"
                 onClick={() => setShowPresetModal(false)}
                 className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800/80 transition-colors cursor-pointer"
-                title="Tutup"
+                title={t('close')}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1109,15 +1111,15 @@ export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, 
               {/* ShareCode Input */}
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-zinc-300 flex items-center justify-between">
-                  <span>Kode Preset / URL:</span>
-                  <span className="text-[10px] text-zinc-500 font-mono">Format Stella Sora (27-byte Base64)</span>
+                  <span>{t('presetCodeLabel')}</span>
+                  <span className="text-[10px] text-zinc-500 font-mono">{t('presetFormatHint')}</span>
                 </label>
                 <div className="flex items-center rounded-xl border border-zinc-750 bg-zinc-900/90 focus-within:border-pink-500/70 focus-within:ring-2 focus-within:ring-pink-500/20 transition-all p-1.5 gap-1.5">
                   <input
                     type="text"
                     value={presetInput}
                     onChange={(e) => setPresetInput(e.target.value)}
-                    placeholder="Paste ShareCode (contoh: AAAAogAAAJs... atau #build=...)"
+                    placeholder={t('presetPlaceholder')}
                     className="flex-1 px-3 py-1.5 text-xs font-mono bg-transparent text-zinc-100 placeholder-zinc-600 focus:outline-none"
                     autoFocus
                   />
@@ -1134,17 +1136,17 @@ export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, 
                       }
                     }}
                     className="px-3 py-1.5 text-xs font-bold rounded-lg bg-pink-500/20 hover:bg-pink-500/30 text-pink-300 border border-pink-500/40 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer shadow-xs"
-                    title="Paste dari Clipboard"
+                    title={t('paste')}
                   >
                     <ClipboardPaste className="w-3.5 h-3.5" />
-                    <span>Paste</span>
+                    <span>{t('paste')}</span>
                   </button>
                   {presetInput && (
                     <button
                       type="button"
                       onClick={() => setPresetInput('')}
                       className="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors shrink-0 cursor-pointer"
-                      title="Hapus"
+                      title={t('clear')}
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -1157,12 +1159,12 @@ export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, 
                 <div className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-850 space-y-2 text-xs text-zinc-400">
                   <div className="flex items-center gap-2 font-bold text-zinc-300 text-xs">
                     <Sparkles className="w-3.5 h-3.5 text-pink-400" />
-                    <span>Petunjuk ShareCode:</span>
+                    <span>{t('presetGuideTitle')}</span>
                   </div>
                   <ul className="space-y-1.5 pl-4 list-disc text-[11px] text-zinc-400 leading-relaxed">
-                    <li>Salin ShareCode dari menu preset game <span className="text-zinc-200 font-medium">Stella Sora</span> atau dari URL build.</li>
-                    <li>Klik tombol <span className="text-pink-300 font-semibold">Paste</span> untuk memindai otomatis susunan potensi.</li>
-                    <li>Pratinjau level potensi Leader dan Support akan langsung ditampilkan secara transparan sebelum diterapkan.</li>
+                    <li>{t('presetGuideItem1')}</li>
+                    <li>{t('presetGuideItem2')}</li>
+                    <li>{t('presetGuideItem3')}</li>
                   </ul>
                 </div>
               )}
@@ -1320,7 +1322,7 @@ export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, 
                 onClick={() => setShowPresetModal(false)}
                 className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white bg-zinc-850/60 hover:bg-zinc-800 border border-zinc-750 transition-colors cursor-pointer"
               >
-                Batal
+                {t('cancel')}
               </button>
 
               <div className="flex items-center gap-2 flex-wrap">
@@ -1344,7 +1346,7 @@ export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, 
                   className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white shadow-md disabled:opacity-40 transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <Check className="w-3.5 h-3.5" />
-                  <span>Terapkan Potensi (Level Asli)</span>
+                  <span>{t('applyExact')}</span>
                 </button>
 
                 <button
@@ -1354,7 +1356,7 @@ export const TalentPanel: React.FC<Props> = ({ character, build, onChangeBuild, 
                   className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 disabled:opacity-40 transition-all cursor-pointer"
                   title="Aktifkan potensi dengan level maksimal Lv.6"
                 >
-                  Semua Max (Lv.6)
+                  {t('applyMax')}
                 </button>
               </div>
             </div>
